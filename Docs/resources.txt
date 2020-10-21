@@ -1,0 +1,29 @@
+License Plate
+https://towardsdatascience.com/automatic-license-plate-detection-recognition-using-deep-learning-624def07eaaf
+
+
+1. In models\research
+protoc object_detection\protos\*.proto --python_out=.
+
+2. 
+set PYTHONPATH=C:\tensorflow1\models;C:\tensorflow1\models\research;C:\tensorflow1\models\research\slim
+
+3. Generate records
+python generate_tfrecord.py -x C:\Users\Kukus\Desktop\RnR\Workspace\images\train -l C:\Users\Kukus\Desktop\RnR\Workspace\annotations\label_map.pbtxt -o C:\Users\Kukus\Desktop\RnR\Workspace\annotations\train.record
+
+python generate_tfrecord.py -x C:\Users\Kukus\Desktop\RnR\Workspace\images\test -l C:\Users\Kukus\Desktop\RnR\Workspace\annotations\label_map.pbtxt -o C:\Users\Kukus\Desktop\RnR\Workspace\annotations\test.record
+
+3. Train model from Workspace
+python model_main_tf2.py --model_dir=models\my_faster_rcnn_resnet101_v1 --pipeline_config_path=models\my_faster_rcnn_resnet101_v1\pipeline.config
+
+python model_main_tf2.py --model_dir=models\my_ssd_resnet50_v1_fpn --pipeline_config_path=models\my_ssd_resnet50_v1_fpn\pipeline.config
+
+4. Export the model
+python .\exporter_main_v2.py --input_type image_tensor --pipeline_config_path .\models\my_faster_rcnn_resnet101_v1\pipeline.config --trained_checkpoint_dir .\models\my_faster_rcnn_resnet101_v1\ --output_directory .\exported-models\my_faster_rcnn_resnet101_v1
+
+python .\exporter_main_v2.py --input_type image_tensor --pipeline_config_path .\models\my_ssd_resnet50_v1_fpn\pipeline.config --trained_checkpoint_dir .\models\my_ssd_resnet50_v1_fpn\ --output_directory .\exported-models\my_ssd_resnet50_v1_fpn
+
+
+
+*. Evaluate Model
+python model_main_tf2.py --pipeline_config_path models\my_ssd_resnet50_v1_fpn\pipeline.config --model_dir models\my_ssd_resnet50_v1_fpn --checkpoint_dir models\my_ssd_resnet50_v1_fpn --alsologtostderr
